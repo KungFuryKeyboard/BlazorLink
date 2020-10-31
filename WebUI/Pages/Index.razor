@@ -10,13 +10,15 @@ Welcome to your new app.
     <DataAnnotationsValidator />
     <ValidationSummary />
     <p>
-        <label>
-            URL to Shorten:
-            <InputText  @bind-Value="URLToShorten.URL" />
-        </label>
-    </p>
 
-    <button type="submit">Submit</button>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon3">URL To Shorten</span>
+      </div>
+      <InputText type="text"  @bind-Value="URLToShorten.URL" class="form-control" id="basic-url" aria-describedby="basic-addon3" />
+    </div>
+    </p>
+    <button class="btn btn-primary" type="submit">Submit</button>
 
 </EditForm>
 
