@@ -27,6 +27,13 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddCors(opt => {
+              opt.AddDefaultPolicy(pol => {
+                pol.WithOrigins("https://localhost:5001", "http://localhost:5000").AllowAnyHeader();
+              });
+            });
+                      
             services.AddOptions<AppConfigOptions>().Bind(Configuration.GetSection(AppConfigOptions.AppConfig));
             services.AddControllers();
             services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(databaseName: "ShortURl"));
@@ -46,10 +53,12 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
+   
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseCors();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

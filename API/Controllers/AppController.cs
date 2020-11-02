@@ -31,12 +31,12 @@ namespace API.Controllers
 
 
       [HttpPost]
-      public ActionResult<string> Post([FromBody] NewURLRequest urlToShorten)
+      public ActionResult<string> Post([FromBody] string urlToShorten)
       {
-        if(!String.IsNullOrEmpty(urlToShorten.Url)){
+        if(!String.IsNullOrEmpty(urlToShorten)){
 
               var newUrl = new ShortUrl();
-              newUrl.DestinationURL = urlToShorten.Url;
+              newUrl.DestinationURL = urlToShorten;
               string UrlToken = generateToken(7);
               newUrl.Id = UrlToken;
               _db.ShortUrl.Add(newUrl);
