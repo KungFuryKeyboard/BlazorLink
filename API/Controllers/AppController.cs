@@ -23,7 +23,7 @@ namespace API.Controllers
         public AppController(ILogger<AppController> logger, ApplicationDbContext db, IOptions<AppConfigOptions> config)
         {
             _logger = logger;
-           _db = db;
+            _db = db;
             _config = config;
         }
 
@@ -31,12 +31,12 @@ namespace API.Controllers
 
 
       [HttpPost]
-      public ActionResult<string> Post([FromBody] NewURLRequest urlToShorten)
+      public ActionResult<string> Post([FromBody] string urlToShorten)
       {
-        if(!String.IsNullOrEmpty(urlToShorten.Url)){
+        if(!String.IsNullOrEmpty(urlToShorten)){
 
               var newUrl = new ShortUrl();
-              newUrl.DestinationURL = urlToShorten.Url;
+              newUrl.DestinationURL = urlToShorten;
               string UrlToken = generateToken(7);
               newUrl.Id = UrlToken;
               _db.ShortUrl.Add(newUrl);
@@ -51,6 +51,29 @@ namespace API.Controllers
         }
 
       }
+
+      [HttpGet]
+      [Route("/{urlToken}")]
+      public ActionResult AppRedirect([FromRoute] string urlToken)
+      {
+
+
+        if(String.IsNullOrEmpty(urlToken))
+           return BadRequest("invalid token");
+        
+        var x = _db.ShortUrl.FirstOrDefault(x => x.Id == urlToken);
+        
+        if (x == null)
+            return BadRequest("url not found");
+
+        RedirectResult redirect = new RedirectResult(x.DestinationURL);
+        return redirect;
+      }
+
+
+
+
+
       private string generateToken(int Length){
          Guid id = Guid.NewGuid();
          Console.WriteLine($"Guid : {id}");

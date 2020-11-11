@@ -1,36 +1,52 @@
 ﻿@page "/"
 @inject HttpClient Http
 
-<h1>Hello, world!</h1>
+<h1 class="center">BlazorLink</h1>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@* <SurveyPrompt Title="How is Blazor working for you?" /> *@
 <EditForm Model="@URLToShorten" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
-    <ValidationSummary />
+    
     <p>
-
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon3">URL To Shorten</span>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon3">URL to shorten</span>
+        </div>
+        <InputText type="text"  @bind-Value="URLToShorten.URL" class="form-control" id="basic-url" aria-describedby="basic-addon3" />
+        <div class="input-group-append">
+          <span class="input-group-button" id="basic-addon3"><button class="btn btn-primary" type="submit">Submit</button></span>
+        </div>
       </div>
-      <InputText type="text"  @bind-Value="URLToShorten.URL" class="form-control" id="basic-url" aria-describedby="basic-addon3" />
-    </div>
     </p>
-    <button class="btn btn-primary" type="submit">Submit</button>
-
+    <ValidationSummary />
+    @* <button class="btn btn-primary" type="submit">Submit</button> *@
 </EditForm>
 
+@if (!string.IsNullOrEmpty(ShortendURL))
+{
+  <div class="alert alert-dark mt-3" role="alert">
+  <a href="@ShortendURL" class="alert-link" target="_blank">@ShortendURL</a>
+  </div>
+
+}
 
 @code {
-
+    private string ShortendURL ="";
 
     private URLLink URLToShorten = new URLLink() ;
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         string url = URLToShorten.URL;
         Console.WriteLine(url);
+        var result = await Http.PostAsJsonAsync("",url);
+        
+        Console.WriteLine(await result.Content.ReadAsStringAsync());
+        ShortendURL = await result.Content.ReadAsStringAsync();
+        URLToShorten.URL = "";
+        StateHasChanged();
+        
     }
 
 @*    protected override async Task OnInitializedAsync()
