@@ -1,60 +1,69 @@
 ﻿@page "/"
 @inject HttpClient Http
 
-<h1 class="center">BlazorLink</h1>
+
+<div class="row">
+
+    <div class="col-8 mx-auto">
 
 
 
-@* <SurveyPrompt Title="How is Blazor working for you?" /> *@
-<EditForm Model="@URLToShorten" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    
-    <p>
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon3">URL to shorten</span>
-        </div>
-        <InputText type="text"  @bind-Value="URLToShorten.URL" class="form-control" id="basic-url" aria-describedby="basic-addon3" />
-        <div class="input-group-append">
-          <span class="input-group-button" id="basic-addon3"><button class="btn btn-primary" type="submit">Submit</button></span>
-        </div>
-      </div>
-    </p>
-    <ValidationSummary />
-    @* <button class="btn btn-primary" type="submit">Submit</button> *@
-</EditForm>
+        <h1 class="center">BlazorLink</h1>
 
-@if (!string.IsNullOrEmpty(ShortendURL))
-{
-  <div class="alert alert-dark mt-3" role="alert">
-  <a href="@ShortendURL" class="alert-link" target="_blank">@ShortendURL</a>
-  </div>
 
-}
 
-@code {
-    private string ShortendURL ="";
-
-    private URLLink URLToShorten = new URLLink() ;
-    private async Task HandleValidSubmit()
-    {
-        string url = URLToShorten.URL;
-        Console.WriteLine(url);
-        var result = await Http.PostAsJsonAsync("",url);
         
-        Console.WriteLine(await result.Content.ReadAsStringAsync());
-        ShortendURL = await result.Content.ReadAsStringAsync();
-        URLToShorten.URL = "";
-        StateHasChanged();
-        
+        <EditForm Model="@URLToShorten" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+
+            <p>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon3">URL to shorten</span>
+                    </div>
+                    <InputText type="text" @bind-Value="URLToShorten.URL" class="form-control" id="basic-url" aria-describedby="basic-addon3" />
+                    <div class="input-group-append">
+                        <span class="input-group-button" id="basic-addon3"><button class="btn btn-primary" type="submit">Submit</button></span>
+                    </div>
+                </div>
+            </p>
+            <ValidationSummary />
+            @* <button class="btn btn-primary" type="submit">Submit</button> *@
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(ShortendURL))
+        {
+            <div class="alert alert-dark mt-3" role="alert">
+                <a href="@ShortendURL" class="alert-link" target="_blank">@ShortendURL</a>
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+    @code {
+        private string ShortendURL = "";
+
+        private URLLink URLToShorten = new URLLink();
+        private async Task HandleValidSubmit()
+        {
+            string url = URLToShorten.URL;
+            Console.WriteLine(url);
+            var result = await Http.PostAsJsonAsync("", url);
+
+            Console.WriteLine(await result.Content.ReadAsStringAsync());
+            ShortendURL = await result.Content.ReadAsStringAsync();
+            URLToShorten.URL = "";
+            StateHasChanged();
+
+        }
+
+      //    protected override async Task OnInitializedAsync()
+      //    {
+      //        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+      //    }
+
+
     }
-
-@*    protected override async Task OnInitializedAsync()
-    {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }*@
-
-
-
-
-}
