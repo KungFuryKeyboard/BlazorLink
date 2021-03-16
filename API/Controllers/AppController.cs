@@ -10,97 +10,108 @@ using Microsoft.Extensions.Options;
 
 namespace API.Controllers
 {
-    [ApiController]
-   [Route("")]
-    public class AppController : ControllerBase
+  [ApiController]
+  [Route("")]
+  public class AppController : ControllerBase
+  {
+
+
+    private readonly ILogger<AppController> _logger;
+    private readonly ApplicationDbContext _db;
+    private readonly IOptions<AppConfigOptions> _config;
+
+    public AppController(ILogger<AppController> logger, ApplicationDbContext db, IOptions<AppConfigOptions> config)
+    {
+      _logger = logger;
+      _db = db;
+      _config = config;
+    }
+
+
+
+
+    [HttpPost]
+    public ActionResult<string> Post([FromBody] string urlToShorten)
+    {
+      if (!String.IsNullOrEmpty(urlToShorten))
+      {
+        var newUrl = new ShortUrl();
+        newUrl.DestinationURL = urlToShorten;
+        Console.WriteLine("URL to shorten: " + urlToShorten);
+        string UrlToken = generateToken(Length: 7);
+        newUrl.Id = UrlToken;
+        _db.ShortUrl.Add(newUrl);
+        _db.SaveChanges();
+        string ReturnUrl = _config.Value.DefaultDomain + "/" + UrlToken;
+        Console.WriteLine(ReturnUrl);
+
+        return ReturnUrl;
+      }
+      else
+      {
+        return BadRequest("invalid url");
+      }
+
+    }
+
+    [HttpGet]
+    [Route("/{urlToken}")]
+    public ActionResult AppRedirect([FromRoute] string urlToken)
     {
 
 
-        private readonly ILogger<AppController> _logger;
-         private readonly ApplicationDbContext _db;
-         private readonly IOptions<AppConfigOptions> _config;
+      if (String.IsNullOrEmpty(urlToken))
+        return BadRequest("invalid token");
 
-        public AppController(ILogger<AppController> logger, ApplicationDbContext db, IOptions<AppConfigOptions> config)
-        {
-            _logger = logger;
-            _db = db;
-            _config = config;
-        }
+      var x = _db.ShortUrl.FirstOrDefault(x => x.Id == urlToken);
 
+      if (x == null)
+        return BadRequest("url not found");
 
+      // check if user saved the url with http / https and add one if they didn't.
+      if (!x.DestinationURL.StartsWith("http://") && !x.DestinationURL.StartsWith("https://"))
+        return new RedirectResult("http://" + x.DestinationURL);
+      else
+        return new RedirectResult(x.DestinationURL);
 
+      //RedirectResult redirect = new RedirectResult(x.DestinationURL);
+      //Console.Write(redirect.Url);
 
-      [HttpPost]
-      public ActionResult<string> Post([FromBody] string urlToShorten)
-      {
-        if(!String.IsNullOrEmpty(urlToShorten)){
-
-              var newUrl = new ShortUrl();
-              newUrl.DestinationURL = urlToShorten;
-              string UrlToken = generateToken(7);
-              newUrl.Id = UrlToken;
-              _db.ShortUrl.Add(newUrl);
-             _db.SaveChanges();
-            string ReturnUrl = _config.Value.DefaultDomain + "/" + UrlToken;
-            Console.WriteLine(ReturnUrl);
-
-         return ReturnUrl;
-
-        }else{
-            return BadRequest("invalid url");
-        }
-
-      }
-
-      [HttpGet]
-      [Route("/{urlToken}")]
-      public ActionResult AppRedirect([FromRoute] string urlToken)
-      {
-
-
-        if(String.IsNullOrEmpty(urlToken))
-           return BadRequest("invalid token");
-        
-        var x = _db.ShortUrl.FirstOrDefault(x => x.Id == urlToken);
-        
-        if (x == null)
-            return BadRequest("url not found");
-
-        RedirectResult redirect = new RedirectResult(x.DestinationURL);
-        return redirect;
-      }
-
-
-
-
-
-      private string generateToken(int Length){
-         Guid id = Guid.NewGuid();
-         Console.WriteLine($"Guid : {id}");
-         var UrlToken = Convert.ToBase64String(id.ToByteArray())
-             .Replace("_", "")
-             .Replace("/", "")
-             .Replace("+", "")
-             .Replace("-", "")
-             .Substring(0, Length);
-         Console.WriteLine($"base 64 : {UrlToken}");
-
-         Console.WriteLine($"Shuffle base 64 : {UrlToken}");
-         return UrlToken;
-      }
-
-
-        // [HttpGet]
-        // public IEnumerable<WeatherForecast> Get()
-        // {
-        //     var rng = new Random();
-        //     return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        //     {
-        //         Date = DateTime.Now.AddDays(index),
-        //         TemperatureC = rng.Next(-20, 55),
-        //         Summary = Summaries[rng.Next(Summaries.Length)]
-        //     })
-        //     .ToArray();
-        // }
+      //return redirect;
     }
+
+
+
+
+
+    private string generateToken(int Length)
+    {
+      Guid id = Guid.NewGuid();
+      Console.WriteLine($"Guid : {id}");
+      var UrlToken = Convert.ToBase64String(id.ToByteArray())
+          .Replace("_", "")
+          .Replace("/", "")
+          .Replace("+", "")
+          .Replace("-", "")
+          .Substring(0, Length);
+      Console.WriteLine($"base 64 : {UrlToken}");
+
+      Console.WriteLine($"Shuffle base 64 : {UrlToken}");
+      return UrlToken;
+    }
+
+
+    // [HttpGet]
+    // public IEnumerable<WeatherForecast> Get()
+    // {
+    //     var rng = new Random();
+    //     return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+    //     {
+    //         Date = DateTime.Now.AddDays(index),
+    //         TemperatureC = rng.Next(-20, 55),
+    //         Summary = Summaries[rng.Next(Summaries.Length)]
+    //     })
+    //     .ToArray();
+    // }
+  }
 }
