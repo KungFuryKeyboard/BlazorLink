@@ -15,7 +15,6 @@ namespace API.Controllers
   public class AppController : ControllerBase
   {
 
-
     private readonly ILogger<AppController> _logger;
     private readonly ApplicationDbContext _db;
     private readonly IOptions<AppConfigOptions> _config;
@@ -36,7 +35,7 @@ namespace API.Controllers
       if (!String.IsNullOrEmpty(urlToShorten))
       {
         var newUrl = new ShortUrl();
-        newUrl.DestinationURL = urlToShorten;
+        newUrl.DestinationURL = urlToShorten.Trim();
         Console.WriteLine("URL to shorten: " + urlToShorten);
         string UrlToken = generateToken(Length: 7);
         newUrl.Id = UrlToken;
@@ -63,6 +62,17 @@ namespace API.Controllers
       if (String.IsNullOrEmpty(urlToken))
         return BadRequest("invalid token");
 
+      if (urlToken.EndsWith("+"))
+      {
+        urlToken = urlToken.Remove(urlToken.Length - 1, 1);
+        var b = _db.ShortUrl.FirstOrDefault(x => x.Id == urlToken);
+        
+        if (b == null)
+          return BadRequest("url not found");
+        else
+          return Content(GetPreviewPage(b.DestinationURL),"text/html");
+      }
+
       var x = _db.ShortUrl.FirstOrDefault(x => x.Id == urlToken);
 
       if (x == null)
@@ -80,7 +90,26 @@ namespace API.Controllers
       //return redirect;
     }
 
+    private string GetPreviewPage(string url){
 
+      var page =$@"<html><head><link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/sketchy/bootstrap.min.css'></head><body>
+      <div class='container'>
+          <div class='row' style='height:100%'>
+            <div class='col-sm'>
+            </div>
+            <div class='col-sm d-flex flex-wrap align-items-center text-center'>
+            <span class='btn btn-info'>  <h3 center>Destination : {url}</h1></span>
+            </div>
+            <div class='col-sm'>
+            </div>
+          </div>
+      </div>
+      </body></html>
+      ";
+
+      return page;
+
+    }
 
 
 
