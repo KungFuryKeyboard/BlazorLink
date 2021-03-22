@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inject HttpClient Http
-
-<h1 class="center">BlazorLink</h1>
+ <div class="container mt-5">
+<h1 class="text-center">BlazorLink</h1>
 
 
 
@@ -9,17 +9,17 @@
 <EditForm Model="@URLToShorten" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     
-    <p>
+   
       <div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon3">URL to shorten</span>
         </div>
-        <InputText type="text"  @bind-Value="URLToShorten.URL" class="form-control" id="basic-url" aria-describedby="basic-addon3" />
+        <InputText type="text"  @bind-Value="URLToShorten.URL" class="form-control modified" id="basic-url" aria-describedby="basic-addon3" />
         <div class="input-group-append">
           <span class="input-group-button" id="basic-addon3"><button class="btn btn-primary" type="submit">Submit</button></span>
         </div>
       </div>
-    </p>
+   
     <ValidationSummary />
     @* <button class="btn btn-primary" type="submit">Submit</button> *@
 </EditForm>
@@ -31,7 +31,7 @@
   </div>
 
 }
-
+ </div>
 @code {
     private string ShortendURL ="";
 
