@@ -95,12 +95,9 @@ namespace API.Controllers
       var page =$@"<html><head><link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/sketchy/bootstrap.min.css'></head><body>
       <div class='container'>
           <div class='row' style='height:100%'>
-            <div class='col-sm'>
-            </div>
-            <div class='col-sm d-flex flex-wrap align-items-center text-center'>
-            <span class='btn btn-info'>  <h3 center>Destination : {url}</h1></span>
-            </div>
-            <div class='col-sm'>
+
+            <div class='col-md-12 d-flex flex-wrap align-items-center text-center'>
+            <a href='{url}'><span class='btn btn-dark'>  <h3 center>Destination : {url}</h1></span></a>
             </div>
           </div>
       </div>
