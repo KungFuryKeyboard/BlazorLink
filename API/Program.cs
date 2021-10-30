@@ -1,26 +1,58 @@
-using Microsoft.AspNetCore.Hosting;
+using API;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
-namespace API
+var builder = WebApplication.CreateBuilder(args);
+
+
+
+// Add services to the container.
+builder.Services.AddCors(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    options.AddDefaultPolicy(
+                      builder =>
+                      {
+                          builder.WithOrigins("https://localhost:5001",
+                                              "http://localhost:5000").AllowAnyMethod().AllowAnyHeader();
+                      });
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+
+builder.Services.AddControllers();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(databaseName: "ShortURl"));
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+
+var confbuilder = new ConfigurationBuilder();
+confbuilder.AddJsonFile("appsettings.json");
+IConfigurationRoot config = confbuilder.Build();
+
+
+builder.Services.AddOptions<AppConfigOptions>().Bind(config.GetSection(AppConfigOptions.AppConfig));
+
+var app = builder.Build();
+
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
+
+
+
+app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+
+app.Run();
