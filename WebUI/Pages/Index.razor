@@ -6,6 +6,8 @@
 
 
 @* <SurveyPrompt Title="How is Blazor working for you?" /> *@
+<ErrorBoundary>
+     <ChildContent>
 <EditForm Model="@URLToShorten" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     
@@ -23,6 +25,16 @@
     <ValidationSummary />
     @* <button class="btn btn-primary" type="submit">Submit</button> *@
 </EditForm>
+
+  </ChildContent>
+    <ErrorContent>
+        <div class="alert alert-dismissible alert-warning">
+        
+          <h4 class="alert-heading">Error</h4>
+          <p class="mb-0">We had a problem creating your link.</p>
+        </div>
+    </ErrorContent>
+</ErrorBoundary>
 
 @if (!string.IsNullOrEmpty(ShortendURL))
 {
