@@ -1,5 +1,13 @@
 ﻿@page "/"
+@page "/index"
 @inject HttpClient Http
+
+
+<PageTitle>BlazorLink</PageTitle>
+<HeadContent>
+    <meta name="description" content="@description">
+</HeadContent>
+
  <div class="container mt-5">
 <h1 class="text-center">BlazorLink</h1>
 
@@ -60,6 +68,9 @@
         StateHasChanged();
         
     }
+
+    private string description = "A bitly(like) C# wasm url shortener";
+    private string title = "BlazorLink";
 
 @*    protected override async Task OnInitializedAsync()
     {
