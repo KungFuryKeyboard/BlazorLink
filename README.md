@@ -1,7 +1,7 @@
 # BlazorLink
 A url shortner built using .net 6, API and Blazor webassembly for UI 
 
-Like bitly but written wasm
+Like bitly but written in wasm
 
 Currently the project is just using an in memory database using entity framework core, you can easily swap this out for a different database type. 
 
