@@ -43,8 +43,9 @@ namespace API.Controllers
         _db.SaveChanges();
         string ReturnUrl = _config.Value.DefaultDomain + "/" + UrlToken;
         Console.WriteLine(ReturnUrl);
+       
 
-        return ReturnUrl;
+                return ReturnUrl;
       }
       else
       {
