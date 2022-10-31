@@ -47,7 +47,8 @@
 @if (!string.IsNullOrEmpty(ShortendURL))
 {
   <div class="alert alert-dark mt-3" role="alert">
-  <a href="@ShortendURL" class="alert-link" target="_blank">@ShortendURL</a>
+    <a href=@ShortendURL class="alert-link" target="_blank">@ShortendURL</a>
+  
   </div>
 
 }
@@ -61,9 +62,10 @@
         string url = URLToShorten.URL;
         Console.WriteLine(url);
         var result = await Http.PostAsJsonAsync("",url);
-        
-        Console.WriteLine(await result.Content.ReadAsStringAsync());
+
+        //Console.WriteLine(await result.Content.ReadAsStringAsync());
         ShortendURL = await result.Content.ReadAsStringAsync();
+        Console.WriteLine(ShortendURL);
         URLToShorten.URL = "";
         StateHasChanged();
         
