@@ -1,5 +1,5 @@
 # BlazorLink
-A url shortner built using .net 6, API and Blazor webassembly for UI 
+A url shortner built using .net 7, API and Blazor webassembly for UI 
 
 Like bitly but written in wasm
 
